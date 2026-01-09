@@ -158,7 +158,6 @@ def sector_heat(top_news):
             if s in heat:
                 heat[s] += sentiment
 
-    # Normalize to labels
     heat_label = {}
     for sector, score in heat.items():
         if score > 0:
@@ -168,10 +167,7 @@ def sector_heat(top_news):
         else:
             heat_label[sector] = "➖ Neutral"
 
-    return heat_label} {direction} "
-        f"{market['bist_close']} seviyesinde tamamladı. "
-        f"USD/TRY {market['usdtry']} seviyesinde izleniyor."
-    )
+    return heat_label
 
 # -----------------------------
 # STREAMLIT UI
