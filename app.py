@@ -187,30 +187,24 @@ def sector_heat(top_news):
 
     for n in top_news:
         text = (n["title"] + " " + n["summary"]).lower()
-        sentiment = (1 if any(p in text for p in pos) else 0) - (1 if any(m in text for m in neg) else 0)
+        sentiment = (1 if any(p in text for p in pos) else 0) - \
+                    (1 if any(m in text for m in neg) else 0)
+
         for s in sector_impact(n):
             if s in heat:
                 heat[s] += sentiment
 
     labels = {}
     for k, v in heat.items():
-        labels[k] = "🔥 Positive" if v > 0 else "❄️ Negative" if v < 0 else "➖ Neutral"
-    return labels
-    heat = {"Banking": 0, "Industrial": 0, "Energy": 0}
-    pos = ["artış", "yükseliş", "güçlü", "rekor", "olumlu"]
-    neg = ["düşüş", "gerileme", "zayıf", "baskı", "risk"]
+        if v > 0:
+            labels[k] = "🔥 Positive"
+        elif v < 0:
+            labels[k] = "❄️ Negative"
+        else:
+            labels[k] = "➖ Neutral"
 
-    for n in top_news:
-        text = (n["title"] + " " + n["summary"]).lower()
-        sentiment = (1 if any(p in text for p in pos) else 0) - (1 if any(m in text for m in neg) else 0)
-        for s in sector_impact(n):
-            if s in heat:
-                heat[s] += sentiment
-
-    labels = {}
-    for k, v in heat.items():
-        labels[k] = "🔥 Positive" if v > 0 else "❄️ Negative" if v < 0 else "➖ Neutral"
     return labels
+
 
 # ==================================================
 # EXPORT FUNCTIONS
