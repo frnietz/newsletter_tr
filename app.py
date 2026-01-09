@@ -195,7 +195,7 @@ def sector_heat(top_news):
     labels = {}
     for k, v in heat.items():
         labels[k] = "🔥 Positive" if v > 0 else "❄️ Negative" if v < 0 else "➖ Neutral"
-    return labels(top_news):
+    return labels
     heat = {"Banking": 0, "Industrial": 0, "Energy": 0}
     pos = ["artış", "yükseliş", "güçlü", "rekor", "olumlu"]
     neg = ["düşüş", "gerileme", "zayıf", "baskı", "risk"]
