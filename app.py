@@ -155,7 +155,47 @@ def sector_impact(news):
     return sectors or ["Broad Market"]
 
 
+def detect_market_theme(top_news):
+    themes = {
+        "Monetary Policy": ["faiz", "tcmb", "merkez bankası"],
+        "Earnings Season": ["bilanço", "kar", "zarar"],
+        "Global Risk": ["fed", "abd", "enflasyon", "resesyon"],
+        "Energy & Commodities": ["petrol", "doğalgaz", "altın", "emtia"],
+        "Growth & Production": ["üretim", "ihracat", "sanayi"]
+    }
+
+    scores = {k: 0 for k in themes}
+
+    for news in top_news:
+        text = (news["title"] + " " + news["summary"]).lower()
+        for theme, keywords in themes.items():
+            if any(k in text for k in keywords):
+                scores[theme] += 1
+
+    best_theme = max(scores, key=scores.get)
+
+    if scores[best_theme] == 0:
+        return "General Market Flow"
+
+    return best_theme
+
+
 def sector_heat(top_news):
+    heat = {"Banking": 0, "Industrial": 0, "Energy": 0}
+    pos = ["artış", "yükseliş", "güçlü", "rekor", "olumlu"]
+    neg = ["düşüş", "gerileme", "zayıf", "baskı", "risk"]
+
+    for n in top_news:
+        text = (n["title"] + " " + n["summary"]).lower()
+        sentiment = (1 if any(p in text for p in pos) else 0) - (1 if any(m in text for m in neg) else 0)
+        for s in sector_impact(n):
+            if s in heat:
+                heat[s] += sentiment
+
+    labels = {}
+    for k, v in heat.items():
+        labels[k] = "🔥 Positive" if v > 0 else "❄️ Negative" if v < 0 else "➖ Neutral"
+    return labels(top_news):
     heat = {"Banking": 0, "Industrial": 0, "Energy": 0}
     pos = ["artış", "yükseliş", "güçlü", "rekor", "olumlu"]
     neg = ["düşüş", "gerileme", "zayıf", "baskı", "risk"]
@@ -224,6 +264,11 @@ if st.button("🔄 Fetch Today's Data"):
         market = get_market_data()
         summary = generate_market_summary(market)
         heat = sector_heat(top_news)
+
+    st.subheader("🧭 Today’s Market Theme")
+
+    market_theme = detect_market_theme(top_news)
+    st.info(market_theme)
 
     st.subheader("📊 Market Snapshot")
     c1, c2, c3 = st.columns(3)
